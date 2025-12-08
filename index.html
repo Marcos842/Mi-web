@@ -1,181 +1,96 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Planes Bitel Postpago</title>
-  <link rel="stylesheet" href="estilos.css" />
+  <meta charset="UTF-8">
+  <title>Escáner LEDdecodigodebarras</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- CSS externo -->
+  <link rel="stylesheet" href="estilo.css">
+
+  <!-- Librerías externas -->
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 </head>
 <body>
-  <!-- Barra superior - Logo Bitel + Beneficios -->
-  <div class="barra-beneficios">
-    <div class="logo-bitel">
-      <img src="Imagenes-pagina/bitel.png" alt="Bitel logo" />
+
+  <h1>🖥️ Escáner LEDdecodigodebarras</h1>
+
+  <!-- SONIDO BEEP -->
+  <audio id="beepAudio" src="beet.mp3" preload="auto"></audio>
+
+  <!-- BLOQUE ESCÁNER -->
+  <div class="container">
+    <div class="center">
+      <!-- Tus botones originales del escáner -->
+      <button id="btnStart" class="btn-green">📱 Iniciar Escáner</button>
+      <button id="btnStop" class="btn-red">⏹️ Detener</button>
+
+      <!-- Botón para mostrar/ocultar el generador -->
+      <br><br>
+      <button class="btn btn-primary" type="button" onclick="toggleCrearCodigo()">
+        ➕ Crear Código de Barras
+      </button>
+      <br><br>
     </div>
-    <div class="beneficio">
-      <img src="https://img.icons8.com/fluency-systems-regular/96/0a746b/scooter.png" alt="Delivery" />
-      <div class="texto-beneficio">
-        <span class="linea1">Delivery gratis</span>
-        <span class="linea2">Delivery gratis</span>
-      </div>
+
+    <div id="reader" class="reader-box"></div>
+
+    <div id="result" class="center result-box">
+      <h2>✅ Código Escaneado:</h2>
+      <p id="code" class="code-text"></p>
+
+      <button id="btnCopyCode" class="btn-blue">📋 Copiar</button>
+      <button id="btnSendForm" class="btn-green">📥 Guardar en Form</button>
     </div>
-    <div class="beneficio">
-      <img src="https://img.icons8.com/ios/50/0a746b/empty-box--v1.png" alt="Envío a domicilio" />
-      <div class="texto-beneficio">
-        <span class="linea1">Envío a domicilio</span>
-        <span class="linea2">Envío a domicilio</span>
-      </div>
+  </div>
+  <!-- BLOQUE CONTADOR DE EQUIPOS -->
+  <div class="container">
+    <div class="center">
+      <h3>Equipos / Ventas</h3>
+
+      <input id="nuevoEquipo" type="text" placeholder="Nombre del equipo">
+      <button id="btnAddEquipo" class="btn-green">Agregar equipo</button>
     </div>
-    <div class="beneficio">
-      <img src="https://img.icons8.com/fluency-systems-regular/96/0a746b/percentage.png" alt="Ahorro garantizado" />
-      <div class="texto-beneficio">
-        <span class="linea1">Ahorro garantizado</span>
-        <span class="linea2">Ahorro garantizado</span>
-      </div>
-    </div>
-    <div class="beneficio">
-      <img src="https://img.icons8.com/fluency-systems-regular/96/0a746b/clock--v1.png" alt="pedido 24/7" />
-      <div class="texto-beneficio">
-        <span class="linea1">Realiza tu pedido</span>
-        <span class="linea2">24/7</span>
-      </div>
+
+    <div id="listaEquipos" class="center" style="margin-top:10px;">
+      <!-- Aquí se crearán los botones de equipos -->
     </div>
   </div>
 
-  <!-- BLOQUE DE AYUDA Y ACCIÓN corregido -->
-  <div class="ayuda-bitel">
-  <h2>¿Como Podemos Ayudarte?</h2>
-  <div class="ayuda-botones">
-    <div class="ayuda-card">
-      <span>¡Quiero un Chip Bitel Nuevo!</span>
-      <a class="boton-ayuda linea-nueva"
-        href="https://wa.me/51917187726?text=Deseo%20adquirir%20una%20linea%20nueva%20Bitel"
-        target="_blank">LINEA NUEVA</a>
-    </div>
-    <div class="ayuda-card">
-      <span>¡Migrar a Bitel con mi Mismo Número!</span>
-      <a class="boton-ayuda portabilidad"
-        href="https://wa.me/51917187726?text=Deseo%20realizar%20una%20portabilidad%20a%20Bitel"
-        target="_blank">PORTABILIDAD</a>
-    </div>
-    <div class="ayuda-card">
-      <span>¡Contactar un Asesor de Ventas!</span>
-      <a class="boton-ayuda contactar"
-        href="https://wa.me/51917187726?text=Tengo%20una%20consulta%20antes%20de%20adquirir%20Bitel"
-        target="_blank">CONTACTAR</a>
-    </div>
-  </div>
+  <!-- BLOQUE GENERADOR (oculto al inicio) -->
+  <div class="container crear-codigo-contenedor" id="seccionCrearCodigo">
+    <div class="center">
+      <h3>➕ Crear Código de Barras</h3>
+
+      <input
+        type="text"
+        id="codigoInput"
+        placeholder="Escribe código (ej: 1234567890123)"
+        maxlength="40">
+      <br>
+      <div class="center">
+  <button id="btnGenBarcode" class="btn-green">📊 Generar Código Barras</button>
+  <button id="btnGenQR" class="btn-blue">📱 Generar QR</button>
+</div>
+
+<div class="center canvas-box">
+  <canvas id="barcodeCanvas" width="300" height="100"></canvas>
+  <canvas id="qrCanvas" width="200" height="200"></canvas>
+</div>
+
+<div class="center">
+  <button id="btnClearBarcode" class="btn-red">🗑️ Eliminar código de barras</button>
+  <button id="btnClearQR" class="btn-red">🗑️ Eliminar QR</button>
+</div>
+
+<div class="center">
+  <button id="btnDownloadPng" class="btn-blue">⬇️ Descargar PNG</button>
+  <button id="btnDownloadJpg" class="btn-blue">⬇️ Descargar JPG</button>
 </div>
 
 
-  <h1>Encuentra tu Plan ideal!</h1>
-  <div class="planes">
-    <!-- Plan 1 -->
-    <div class="plan" id="plan1">
-      <div class="etiqueta">Plan Recomendado</div>
-      <h2>Ilimitado 79.90 - 50% dscto Portabilidad</h2>
-      <div class="paga-ahora">Paga ahora</div>
-      <div class="precio">s/39.90</div>
-      <div class="plazos">x 12 meses, luego S/79.90</div>
-      <ul class="beneficios">
-        <li>125 GB alta velocidad</li>
-        <li>Internet, llamadas y SMS ilimitados</li>
-        <li>Datos 5G ilimitados</li>
-        <li>Apps incluidas: Facebook, Instagram, Spotify, TikTok, TV360</li>
-      </ul>
-      <div class="iconos-apps">
-        <img src="https://img.icons8.com/color/48/facebook-new.png" alt="Facebook" />
-        <img src="https://img.icons8.com/color/48/instagram-new.png" alt="Instagram" />
-        <img src="https://img.icons8.com/color/48/spotify--v1.png" alt="Spotify" />
-        <img src="https://img.icons8.com/color/48/tiktok--v1.png" alt="TikTok" />
-        <img src="Imagenes-pagina/tv360.png" class="tv360-icon" alt="TV360" />
-      </div>
-      <button class="vermas" onclick="toggleDetalles('detalles1', this)">Ver más</button>
-      <div class="detalles" id="detalles1">
-        <ul>
-          <li>Suscripción Paramount+ y TV360 x 6 meses</li>
-          <li>Acumula hasta 1,000 GB</li>
-          <li>Facebook e Instagram ilimitado baja velocidad</li>
-          <li>20 GB Spotify por 6 meses</li>
-          <li>30 GB TikTok por 6 meses</li>
-        </ul>
-        <div class="boton-contenedor">
-          <a class="boton" href="https://wa.me/51917187726?text=Hola,%20quiero%20el%20plan%20recomendado%20de%20Bitel" target="_blank">Lo quiero</a>
-        </div>
-      </div>
-    </div>
-    <!-- Plan 2 -->
-    <div class="plan" id="plan2">
-      <h2>Ilimitado 69.90 - 50% dscto Portabilidad</h2>
-      <div class="paga-ahora">Paga ahora</div>
-      <div class="precio">s/34.90</div>
-      <div class="plazos">x 12 meses, luego S/69.90</div>
-      <ul class="beneficios">
-        <li>100 GB alta velocidad</li>
-        <li>Internet, llamadas y SMS ilimitados</li>
-        <li>Apps incluidas: Facebook, Instagram, Spotify, TikTok, TV360</li>
-      </ul>
-      <div class="iconos-apps">
-        <img src="https://img.icons8.com/color/48/facebook-new.png" alt="Facebook" />
-        <img src="https://img.icons8.com/color/48/instagram-new.png" alt="Instagram" />
-        <img src="https://img.icons8.com/color/48/spotify--v1.png" alt="Spotify" />
-        <img src="https://img.icons8.com/color/48/tiktok--v1.png" alt="TikTok" />
-        <img src="Imagenes-pagina/tv360.png" class="tv360-icon" alt="TV360" />
-      </div>
-      <button class="vermas" onclick="toggleDetalles('detalles2', this)">Ver más</button>
-      <div class="detalles" id="detalles2">
-        <ul>
-          <li>Suscripción TV360 x 6 meses</li>
-          <li>Acumula hasta 1,000 GB</li>
-          <li>Facebook/Instagram ilimitado baja velocidad</li>
-          <li>15 GB Spotify por 6 meses</li>
-          <li>30 GB TikTok por 3 meses</li>
-        </ul>
-        <div class="boton-contenedor">
-          <a class="boton" href="https://wa.me/51917187726?text=Hola,%20quiero%20el%20plan%20S/34.90%20de%20Bitel" target="_blank">Lo quiero</a>
-        </div>
-      </div>
-    </div>
-    <!-- Plan 3 -->
-    <div class="plan" id="plan3">
-      <h2>Ilimitado 55.90 - 50% dscto Portabilidad</h2>
-      <div class="paga-ahora">Paga ahora</div>
-      <div class="precio">s/27.90</div>
-      <div class="plazos">x 12 meses, luego S/55.90</div>
-      <ul class="beneficios">
-        <li>75 GB alta velocidad</li>
-        <li>Internet, llamadas y SMS ilimitados</li>
-        <li>Apps incluidas: Facebook, Instagram, Spotify, TikTok, TV360</li>
-      </ul>
-      <div class="iconos-apps">
-        <img src="https://img.icons8.com/color/48/facebook-new.png" alt="Facebook" />
-        <img src="https://img.icons8.com/color/48/instagram-new.png" alt="Instagram" />
-        <img src="https://img.icons8.com/color/48/spotify--v1.png" alt="Spotify" />
-        <img src="https://img.icons8.com/color/48/tiktok--v1.png" alt="TikTok" />
-        <img src="Imagenes-pagina/tv360.png" class="tv360-icon" alt="TV360" />
-      </div>
-      <button class="vermas" onclick="toggleDetalles('detalles3', this)">Ver más</button>
-      <div class="detalles" id="detalles3">
-        <ul>
-          <li>Suscripción TV360 x 6 meses</li>
-          <li>Facebook/Instagram ilimitado baja velocidad</li>
-          <li>15 GB Spotify por 6 meses</li>
-          <li>50 GB TikTok por 3 meses</li>
-        </ul>
-        <div class="boton-contenedor">
-          <a class="boton" href="https://wa.me/51917187726?text=Hola,%20quiero%20el%20plan%20S/27.90%20de%20Bitel" target="_blank">Lo quiero</a>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="descripcion-final">
-    <h2>Bitel Postpago</h2>
-    ¿Te preocupa quedarte sin datos móviles, Llamadas o mensajes de texto? ¡No te preocupes más! Con nuestros <strong>Planes Bitel Postpago</strong>, tendrás acceso a Internet, Llamadas todo destino nacional y SMS ilimitados para que puedas mantenerte conectado con tus seres queridos en todo momento, sin preocuparte por los cargos adicionales.
-    <h2>Planes Todo Ilimitado</h2>
-    Bitel ofrece una variedad de <strong>planes postpago en Linea Nueva</strong> que se adaptan a tus necesidades de comunicación. Estos planes de bitel te <strong>brindan Llamadas, SMS a todo destino nacional (tdn) más Internet Ilimitado</strong> para que puedas estar siempre conectado. Además, puedes elegir entre diferentes opciones de datos para asegurarte de tener suficiente capacidad para tus actividades en línea. Explora nuestros <strong>planes postpago de Bitel</strong>.
-  </div>
-
-  <script src="scripts.js"></script>
+  <!-- Lógica principal -->
+  <script src="script.js"></script>
 </body>
 </html>
